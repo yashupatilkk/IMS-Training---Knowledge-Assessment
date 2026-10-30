@@ -1,0 +1,1060 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>IMS Training - Knowledge Assessment</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: 'Segoe UI', Tahoma, Arial, sans-serif;
+    background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+  }
+  .card {
+    background: #ffffff;
+    width: 100%;
+    max-width: 760px;
+    border-radius: 14px;
+    box-shadow: 0 12px 40px rgba(0,0,0,0.25);
+    overflow: hidden;
+  }
+  .card-header {
+    background: #1e3c72;
+    color: #fff;
+    padding: 24px 30px;
+  }
+  .card-header h1 { font-size: 22px; margin-bottom: 6px; }
+  .card-header p { font-size: 13px; opacity: 0.85; }
+  .card-body { padding: 28px 30px; }
+
+  .form-group { margin-bottom: 16px; }
+  .form-group label {
+    display: block;
+    font-size: 13px;
+    font-weight: 600;
+    color: #333;
+    margin-bottom: 6px;
+  }
+  .form-group label .req { color: #e74c3c; }
+  .form-group input {
+    width: 100%;
+    padding: 11px 14px;
+    border: 1px solid #ccc;
+    border-radius: 7px;
+    font-size: 14px;
+    transition: border-color 0.2s;
+  }
+  .form-group input:focus {
+    outline: none;
+    border-color: #2a5298;
+    box-shadow: 0 0 0 3px rgba(42,82,152,0.12);
+  }
+  .form-group input[readonly] {
+    background: #f4f6f9;
+    color: #1e3c72;
+    font-weight: 600;
+  }
+
+  .btn {
+    display: inline-block;
+    background: #2a5298;
+    color: #fff;
+    border: none;
+    padding: 13px 30px;
+    font-size: 15px;
+    font-weight: 600;
+    border-radius: 7px;
+    cursor: pointer;
+    transition: background 0.2s;
+  }
+  .btn:hover { background: #1e3c72; }
+  .btn:disabled { background: #95a5a6; cursor: not-allowed; }
+
+  .question-block {
+    margin-bottom: 22px;
+    padding: 18px 20px;
+    background: #f9fafc;
+    border-left: 4px solid #2a5298;
+    border-radius: 6px;
+  }
+  .question-block .q-no {
+    display: inline-block;
+    background: #2a5298;
+    color: #fff;
+    padding: 3px 10px;
+    border-radius: 12px;
+    font-size: 11px;
+    font-weight: 700;
+    margin-bottom: 8px;
+  }
+  .question-block .q-text {
+    font-size: 15px;
+    font-weight: 600;
+    color: #222;
+    margin-bottom: 12px;
+    line-height: 1.45;
+  }
+  .options label {
+    display: block;
+    padding: 9px 14px;
+    margin-bottom: 6px;
+    border: 1.5px solid #dde3ec;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 14px;
+    transition: all 0.15s;
+  }
+  .options label:hover { background: #eef3fb; border-color: #b9c8e0; }
+  .options input[type="radio"] { margin-right: 8px; }
+  .options label:has(input:checked) { background: #e3ecfb; border-color: #2a5298; font-weight: 700; color: #1e3c72; }
+
+  .progress {
+    height: 6px;
+    background: #e5e9f0;
+    border-radius: 3px;
+    overflow: hidden;
+    margin-bottom: 20px;
+  }
+  .progress-bar {
+    height: 100%;
+    background: #27ae60;
+    transition: width 0.3s;
+  }
+
+  .result-box {
+    text-align: center;
+    padding: 24px 20px 18px;
+  }
+  .marks-big {
+    font-size: 46px;
+    font-weight: 800;
+    color: #1e3c72;
+    line-height: 1;
+    margin-bottom: 4px;
+  }
+  .marks-big .total { font-size: 26px; color: #888; font-weight: 600; }
+  .marks-label { font-size: 14px; color: #555; margin-bottom: 14px; }
+  .right-wrong-summary {
+    display: flex;
+    justify-content: center;
+    gap: 14px;
+    margin-bottom: 16px;
+    flex-wrap: wrap;
+  }
+  .summary-pill {
+    padding: 9px 18px;
+    border-radius: 25px;
+    font-size: 14px;
+    font-weight: 700;
+  }
+  .pill-right { background: #e8f5e9; color: #1b5e20; border: 1.5px solid #27ae60; }
+  .pill-wrong { background: #fdecea; color: #b71c1c; border: 1.5px solid #e74c3c; }
+  .band-badge {
+    display: inline-block;
+    padding: 9px 28px;
+    border-radius: 25px;
+    font-size: 16px;
+    font-weight: 800;
+    margin-bottom: 12px;
+  }
+  .band-excellent { background: #27ae60; color: #fff; }
+  .band-good { background: #2a9df4; color: #fff; }
+  .band-needs { background: #f39c12; color: #fff; }
+  .band-refresher { background: #e74c3c; color: #fff; }
+
+  .summary-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 10px;
+    font-size: 13px;
+  }
+  .summary-table th, .summary-table td {
+    border: 1px solid #ddd;
+    padding: 8px 10px;
+    text-align: left;
+    vertical-align: top;
+  }
+  .summary-table th { background: #1e3c72; color: #fff; }
+  .summary-table tr:nth-child(even) { background: #f9fafc; }
+  .badge-right { background: #27ae60; color: #fff; padding: 2px 9px; border-radius: 10px; font-size: 11px; font-weight: 700; }
+  .badge-wrong { background: #e74c3c; color: #fff; padding: 2px 9px; border-radius: 10px; font-size: 11px; font-weight: 700; }
+
+  .alert {
+    padding: 12px 16px;
+    border-radius: 7px;
+    margin-bottom: 16px;
+    font-size: 14px;
+    display: none;
+  }
+  .alert-error { background: #fdecea; color: #b71c1c; border: 1px solid #f5c6cb; }
+  .alert-success { background: #e8f5e9; color: #1b5e20; border: 1px solid #c8e6c9; }
+
+  .footer-note {
+    margin-top: 18px;
+    font-size: 12px;
+    color: #888;
+    text-align: center;
+  }
+
+  .scoring-guide {
+    background: #f4f6f9;
+    padding: 12px 16px;
+    border-radius: 7px;
+    font-size: 12px;
+    color: #444;
+    margin-top: 14px;
+    line-height: 1.7;
+  }
+  .scoring-guide b { color: #1e3c72; }
+
+  .feedback-section {
+    margin-top: 24px;
+    padding: 22px;
+    background: #f4f6f9;
+    border-radius: 10px;
+    border-left: 4px solid #1e3c72;
+  }
+  .feedback-section h2 {
+    color: #1e3c72;
+    font-size: 18px;
+    margin-bottom: 6px;
+  }
+  .feedback-section .subtitle {
+    font-size: 13px;
+    color: #555;
+    font-style: italic;
+    margin-bottom: 12px;
+  }
+  .feedback-section .instructions {
+    font-size: 13px;
+    color: #444;
+    background: #fff;
+    padding: 10px 14px;
+    border-radius: 6px;
+    margin-bottom: 18px;
+    border: 1px solid #dde3ec;
+  }
+  .emp-info-box {
+    background: #fff;
+    border: 1px solid #dde3ec;
+    border-radius: 8px;
+    padding: 16px 20px;
+    margin-bottom: 20px;
+  }
+  .emp-info-box h3 {
+    color: #1e3c72;
+    font-size: 14px;
+    margin-bottom: 10px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+  .emp-info-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px 20px;
+    font-size: 14px;
+  }
+  .emp-info-grid > div { padding: 4px 0; }
+  .emp-info-grid b { color: #1e3c72; display: inline-block; min-width: 130px; }
+  .emp-info-grid input {
+    padding: 6px 10px; border: 1px solid #ccc; border-radius: 5px;
+    font-size: 13px; width: 100%; max-width: 280px;
+  }
+  .feedback-question {
+    background: #fff;
+    padding: 14px 16px;
+    border-radius: 6px;
+    border: 1px solid #e2e7ef;
+    margin-bottom: 12px;
+  }
+  .feedback-question .fq-text {
+    font-size: 14px;
+    font-weight: 600;
+    color: #222;
+    margin-bottom: 10px;
+  }
+  .feedback-question .fq-num {
+    display: inline-block;
+    background: #1e3c72;
+    color: #fff;
+    width: 22px; height: 22px;
+    border-radius: 50%;
+    text-align: center;
+    line-height: 22px;
+    font-size: 12px;
+    font-weight: 700;
+    margin-right: 8px;
+  }
+  .feedback-options label {
+    display: block;
+    padding: 7px 12px;
+    margin-bottom: 5px;
+    border: 1.5px solid #dde3ec;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 13px;
+    transition: all 0.15s;
+  }
+  .feedback-options label:hover { background: #eef3fb; }
+  .feedback-options input[type="radio"] { margin-right: 8px; }
+  .feedback-options label:has(input:checked) {
+    background: #e3ecfb;
+    border-color: #2a5298;
+    font-weight: 700;
+    color: #1e3c72;
+  }
+  .btn-secondary {
+    background: #7f8c8d;
+    color: #fff;
+    margin-right: 10px;
+  }
+  .btn-secondary:hover { background: #5d6d6e; }
+  @media (max-width: 600px) {
+    .emp-info-grid { grid-template-columns: 1fr; }
+  }
+</style>
+</head>
+<body>
+
+<div class="card">
+  <div class="card-header">
+    <h1>IMS Training - Knowledge Assessment</h1>
+    <p>Quick knowledge check. Please fill in your details to begin.</p>
+  </div>
+
+  <div class="card-body">
+
+<div class="share-banner">
+  <div class="share-header">
+    <h2>📲 Share with Employees</h2>
+    <p>Scan the QR code or click the link below to start the assessment</p>
+  </div>
+  <div class="share-content">
+    <div class="qr-display">
+      <img src="data:image/png;base64,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" alt="IMS Quiz QR Code">
+      <p class="qr-caption">📷 Scan with phone camera</p>
+    </div>
+    <div class="link-display">
+      <div class="link-label">🔗 Direct Link:</div>
+      <div class="link-url">https://script.google.com/macros/s/AKfycbyIrFaR1CvkhyTmg0FpAKwLRzwBPWS4-al9PA6aUgBitBC8i2gjYDb2vybYIYO0v5la/exec</div>
+      <button class="copy-btn" onclick="copyLink()">📋 Copy Link</button>
+      <a href="https://script.google.com/macros/s/AKfycbyIrFaR1CvkhyTmg0FpAKwLRzwBPWS4-al9PA6aUgBitBC8i2gjYDb2vybYIYO0v5la/exec" target="_blank" class="open-btn">🚀 Open Quiz</a>
+      <div class="share-instructions">
+        <b>How to share:</b>
+        <ul>
+          <li>📱 <b>WhatsApp:</b> Copy link → paste in group chat</li>
+          <li>📷 <b>QR Code:</b> Save image → send via WhatsApp or print</li>
+          <li>📧 <b>Email:</b> Copy link → send in email</li>
+          <li>💬 <b>Chat:</b> Copy link → paste in any chat app</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</div>
+
+<style>
+  .share-banner {
+    background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
+    color: #fff;
+    padding: 32px;
+    border-radius: 14px;
+    margin-bottom: 28px;
+    box-shadow: 0 8px 24px rgba(0,0,0,0.15);
+  }
+  .share-header {
+    text-align: center;
+    margin-bottom: 24px;
+    border-bottom: 1px solid rgba(255,255,255,0.2);
+    padding-bottom: 16px;
+  }
+  .share-header h2 {
+    font-size: 24px;
+    margin-bottom: 8px;
+    font-weight: 700;
+  }
+  .share-header p {
+    font-size: 14px;
+    opacity: 0.9;
+  }
+  .share-content {
+    display: flex;
+    gap: 32px;
+    align-items: center;
+    flex-wrap: wrap;
+    justify-content: center;
+  }
+  .qr-display {
+    text-align: center;
+    background: #fff;
+    padding: 20px;
+    border-radius: 12px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+  }
+  .qr-display img {
+    width: 240px;
+    height: 240px;
+    display: block;
+    margin: 0 auto;
+  }
+  .qr-caption {
+    margin-top: 12px;
+    color: #555;
+    font-size: 13px;
+    font-weight: 600;
+  }
+  .link-display {
+    flex: 1;
+    min-width: 280px;
+    max-width: 500px;
+  }
+  .link-label {
+    font-size: 14px;
+    font-weight: 700;
+    margin-bottom: 8px;
+    opacity: 0.9;
+  }
+  .link-url {
+    background: rgba(255,255,255,0.15);
+    padding: 14px 16px;
+    border-radius: 8px;
+    font-family: 'Courier New', monospace;
+    font-size: 11px;
+    word-break: break-all;
+    margin-bottom: 16px;
+    border: 1px solid rgba(255,255,255,0.2);
+    color: #fff;
+  }
+  .copy-btn, .open-btn {
+    display: inline-block;
+    padding: 12px 22px;
+    border-radius: 8px;
+    font-size: 14px;
+    font-weight: 700;
+    cursor: pointer;
+    margin-right: 10px;
+    margin-bottom: 10px;
+    transition: all 0.2s;
+    text-decoration: none;
+    border: none;
+  }
+  .copy-btn {
+    background: #27ae60;
+    color: #fff;
+  }
+  .copy-btn:hover {
+    background: #2ecc71;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(39,174,96,0.4);
+  }
+  .open-btn {
+    background: #fff;
+    color: #1e3c72;
+  }
+  .open-btn:hover {
+    background: #f0f4fa;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+  }
+  .share-instructions {
+    margin-top: 18px;
+    background: rgba(0,0,0,0.15);
+    padding: 14px 18px;
+    border-radius: 8px;
+    font-size: 13px;
+    line-height: 1.8;
+  }
+  .share-instructions b {
+    display: block;
+    margin-bottom: 8px;
+    color: #ffd700;
+  }
+  .share-instructions ul {
+    list-style: none;
+    padding-left: 0;
+  }
+  .share-instructions li {
+    margin-bottom: 6px;
+    padding-left: 0;
+  }
+  @media (max-width: 600px) {
+    .share-banner {
+      padding: 20px;
+    }
+    .share-content {
+      flex-direction: column;
+      gap: 20px;
+    }
+    .qr-display img {
+      width: 200px;
+      height: 200px;
+    }
+    .link-url {
+      font-size: 10px;
+    }
+  }
+</style>
+
+<script>
+  function copyLink() {
+    var url = "https://script.google.com/macros/s/AKfycbyIrFaR1CvkhyTmg0FpAKwLRzwBPWS4-al9PA6aUgBitBC8i2gjYDb2vybYIYO0v5la/exec";
+    navigator.clipboard.writeText(url).then(function() {
+      alert("✅ Link copied to clipboard!\n\nNow paste it in WhatsApp, email, or any chat.");
+    }, function() {
+      // Fallback for older browsers
+      var textArea = document.createElement("textarea");
+      textArea.value = url;
+      document.body.appendChild(textArea);
+      textArea.select();
+      try {
+        document.execCommand('copy');
+        alert("✅ Link copied to clipboard!");
+      } catch (err) {
+        alert("Could not copy. Please manually copy this URL:\n" + url);
+      }
+      document.body.removeChild(textArea);
+    });
+  }
+</script>
+
+
+    <!-- ===== STEP 1: REGISTRATION FORM ===== -->
+    <div id="step-register">
+      <div id="reg-alert" class="alert alert-error"></div>
+      <div class="form-group">
+        <label>Topic Name</label>
+        <input type="text" id="topic" value="IMS training" readonly>
+      </div>
+      <div class="form-group">
+        <label>Emp Name <span class="req">*</span></label>
+        <input type="text" id="empName" placeholder="Enter your full name" required>
+      </div>
+      <div class="form-group">
+        <label>Site <span class="req">*</span></label>
+        <input type="text" id="site" placeholder="Enter your site / location" required>
+      </div>
+      <div class="form-group">
+        <label>Emp ID <span class="req">*</span></label>
+        <input type="text" id="empId" placeholder="Enter your employee ID" required>
+      </div>
+      <div class="form-group">
+        <label>Department <span class="req">*</span></label>
+        <input type="text" id="department" placeholder="Enter your department" required>
+      </div>
+      <div class="form-group">
+        <label>Designation <span class="req">*</span></label>
+        <input type="text" id="designation" placeholder="Enter your designation" required>
+      </div>
+      <button class="btn" onclick="startQuiz()">Start Assessment</button>
+      <div class="scoring-guide">
+        <b>Assessment Scoring:</b><br>
+        Excellent: 15–17 &nbsp;|&nbsp; Good: 12–14 &nbsp;|&nbsp; Needs improvement: 9–11 &nbsp;|&nbsp; Refresher training recommended: Below 9
+      </div>
+    </div>
+
+    <!-- ===== STEP 2: QUIZ ===== -->
+    <div id="step-quiz" style="display:none;">
+      <div class="progress"><div id="progress-bar" class="progress-bar" style="width:0%"></div></div>
+      <p style="margin-bottom:16px; font-size:13px; color:#555;">
+        Answer all 17 questions, then continue to the Trainer Feedback Form.
+      </p>
+      <div id="quiz-container"></div>
+      <div id="quiz-alert" class="alert alert-error"></div>
+      <button class="btn" onclick="continueToFeedback()">Continue to Feedback Form &rarr;</button>
+    </div>
+
+    <!-- ===== STEP 2.5: TRAINER FEEDBACK FORM ===== -->
+    <div id="step-feedback" style="display:none;">
+      <div class="feedback-section">
+        <h2>Trainer Feedback Form</h2>
+        <div class="subtitle">Participant feedback | <span id="feedback-date-display"></span></div>
+        <div class="instructions">
+          <b>Instructions:</b> Please tick (✓) one appropriate option for each question based on your training experience.
+        </div>
+
+        <div class="emp-info-box">
+          <h3>Employee Information</h3>
+          <div class="emp-info-grid">
+            <div><b>Name:</b> <span id="fb-name"></span></div>
+            <div><b>Employee ID:</b> <span id="fb-empid"></span></div>
+            <div><b>Department:</b> <span id="fb-dept"></span></div>
+            <div><b>Date:</b> <span id="fb-date"></span></div>
+            <div><b>Training Course:</b> IMS TRAINING</div>
+            <div><b>Trainer Name:</b> <input type="text" id="trainerName" placeholder="Enter trainer name"></div>
+          </div>
+        </div>
+
+        <div id="feedback-questions"></div>
+      </div>
+
+      <div id="feedback-alert" class="alert alert-error"></div>
+      <button class="btn btn-secondary" onclick="backToQuiz()">&larr; Back to Quiz</button>
+      <button class="btn" onclick="submitAll()">Submit Assessment</button>
+    </div>
+
+    <!-- ===== STEP 3: RESULT ===== -->
+    <div id="step-result" style="display:none;">
+      <div id="submit-status" class="alert alert-success">Your responses have been saved to Google Sheet.</div>
+      <div class="result-box">
+        <div id="band-badge" class="band-badge band-excellent">Excellent</div>
+        <div class="marks-big"><span id="marks-scored">0</span><span class="total">/17</span></div>
+        <div class="marks-label">Your Marks (out of 17)</div>
+        <div class="right-wrong-summary">
+          <span class="summary-pill pill-right" id="pill-right">Correct: 0</span>
+          <span class="summary-pill pill-wrong" id="pill-wrong">Wrong: 0</span>
+        </div>
+        <h2 id="result-msg" style="font-size:17px; color:#333;">Assessment Completed</h2>
+        <p id="emp-summary" style="margin-top:6px; font-size:13px; color:#666;"></p>
+      </div>
+      <h3 style="font-size:15px; color:#1e3c72; margin: 10px 0 8px;">Question-wise Result (Right / Wrong)</h3>
+      <table class="summary-table">
+        <thead>
+          <tr>
+            <th>Q#</th>
+            <th>Question</th>
+            <th>Your Answer</th>
+            <th>Correct Answer</th>
+            <th>Result</th>
+          </tr>
+        </thead>
+        <tbody id="result-tbody"></tbody>
+      </table>
+      <div class="footer-note">Thank you for attending the IMS Training.</div>
+    </div>
+
+  </div>
+</div>
+
+<script>
+/* ============================================================
+   IMPORTANT - SETUP YOUR GOOGLE SHEET
+   1. Create a Google Sheet
+   2. Go to Extensions > Apps Script
+   3. Paste the code from the google-apps-script.gs file
+   4. Deploy > New deployment > Web app
+      - Execute as: Me
+      - Who has access: Anyone
+   5. Copy the Web App URL and paste it below between the quotes
+   ============================================================ */
+const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbyIrFaR1CvkhyTmg0FpAKwLRzwBPWS4-al9PA6aUgBitBC8i2gjYDb2vybYIYO0v5la/exec";
+
+/* ============================================================
+   QUESTIONS - 17 questions, 3 options each (a / b / c)
+   For each question:
+     - q: the question text
+     - options: array of 3 answer choices
+     - correct: index of the correct option (0 = a, 1 = b, 2 = c)
+   ============================================================ */
+const QUESTIONS = [
+  {
+    q: "What does ISO stand for?",
+    options: ["International Safety Organization", "International Organization for Standardization", "Indian Standards Organization"],
+    correct: 1
+  },
+  {
+    q: "What is the correct PDCA sequence?",
+    options: ["Plan–Do–Check–Act", "Prepare–Develop–Control–Assess", "Plan–Check–Do–Audit"],
+    correct: 0
+  },
+  {
+    q: "Which standard primarily addresses environmental management?",
+    options: ["ISO 9001", "ISO 14001", "ISO 45001"],
+    correct: 1
+  },
+  {
+    q: "Which standard addresses occupational health and safety management?",
+    options: ["ISO 9001", "ISO 14001", "ISO 45001"],
+    correct: 2
+  },
+  {
+    q: "What is the main purpose of risk-based thinking?",
+    options: ["To eliminate all business risks", "To anticipate risks and opportunities and take appropriate action", "To complete documentation only"],
+    correct: 1
+  },
+  {
+    q: "Who certifies an organization's ISO management system?",
+    options: ["ISO itself in every case", "An independent certification body", "The organization's own manager"],
+    correct: 1
+  },
+  {
+    q: "What does IMS mean?",
+    options: ["Internal Monitoring Schedule", "Integrated Management System", "International Maintenance Standard"],
+    correct: 1
+  },
+  {
+    q: "What is a hazard?",
+    options: ["A numerical risk score", "Something with the potential to cause harm", "A completed permit"],
+    correct: 1
+  },
+  {
+    q: "Which control is generally most effective in the hierarchy?",
+    options: ["PPE", "Warning signage", "Elimination"],
+    correct: 2
+  },
+  {
+    q: "What is the illustrative risk score for likelihood 4 and severity 5?",
+    options: ["9", "20", "25"],
+    correct: 1
+  },
+  {
+    q: "When should a HIRA be reviewed?",
+    options: ["Only once a year", "Only after an injury", "When relevant changes, incidents or new information warrant review"],
+    correct: 2
+  },
+  {
+    q: "What is the primary purpose of a PTW?",
+    options: ["Authorise and control specified work", "Replace HIRA", "Record monthly expenditure"],
+    correct: 0
+  },
+  {
+    q: "What is the first priority during an emergency?",
+    options: ["Protecting equipment", "Life safety", "Resuming business immediately"],
+    correct: 1
+  },
+  {
+    q: "Who should isolate electrical equipment?",
+    options: ["Any available employee", "An authorised, competent person, when safe", "A visitor"],
+    correct: 1
+  },
+  {
+    q: "When may occupants re-enter an evacuated building?",
+    options: ["As soon as the alarm stops", "When an employee opens the door", "After the required authorised clearance"],
+    correct: 2
+  },
+  {
+    q: "What should happen after an emergency drill?",
+    options: ["Nothing if nobody was injured", "Record findings and close corrective actions", "Delete the drill record"],
+    correct: 1
+  },
+  {
+    q: "Should untrained employees enter a hazardous area to rescue someone?",
+    options: ["Yes, immediately", "Only if they wear ordinary PPE", "No; alert emergency services and follow trained rescue procedures"],
+    correct: 2
+  }
+];
+
+/* ============================================================
+   TRAINER FEEDBACK QUESTIONS (5 questions, 4 options each)
+   ============================================================ */
+const FEEDBACK_QUESTIONS = [
+  {
+    q: "How would you rate the trainer's overall knowledge and subject expertise?",
+    options: ["Excellent", "Very Good", "Good", "Needs Improvement"]
+  },
+  {
+    q: "How effectively did the trainer explain the ISO 9001, ISO 14001 and ISO 45001 requirements?",
+    options: ["Very Clear and Effective", "Clear", "Moderately Clear", "Needs Improvement"]
+  },
+  {
+    q: "How would you rate the trainer's communication skills and presentation style?",
+    options: ["Excellent", "Very Good", "Good", "Needs Improvement"]
+  },
+  {
+    q: "How relevant and useful was the training content to your day-to-day roles and responsibilities?",
+    options: ["Highly Relevant", "Very Relevant", "Moderately Relevant", "Not Relevant"]
+  },
+  {
+    q: "Overall, how satisfied are you with the training programme?",
+    options: ["Highly Satisfied", "Satisfied", "Neutral", "Not Satisfied"]
+  }
+];
+
+/* ============================================================
+   PERFORMANCE BANDS
+   ============================================================ */
+function getBand(score) {
+  if (score >= 15) return { name: 'Excellent', class: 'band-excellent', msg: 'Excellent work! Strong understanding of IMS.' };
+  if (score >= 12) return { name: 'Good', class: 'band-good', msg: 'Good performance. Review missed topics.' };
+  if (score >= 9)  return { name: 'Needs improvement', class: 'band-needs', msg: 'Needs improvement. Please review training material.' };
+  return { name: 'Refresher training recommended', class: 'band-refresher', msg: 'Refresher training recommended.' };
+}
+
+/* ============================================================
+   QUIZ LOGIC
+   ============================================================ */
+let employeeData = {};
+let quizAnswers = [];
+
+function showAlert(id, msg) {
+  const el = document.getElementById(id);
+  el.textContent = msg;
+  el.style.display = 'block';
+}
+function hideAlert(id) {
+  document.getElementById(id).style.display = 'none';
+}
+
+function startQuiz() {
+  hideAlert('reg-alert');
+  const empName = document.getElementById('empName').value.trim();
+  const site = document.getElementById('site').value.trim();
+  const empId = document.getElementById('empId').value.trim();
+  const department = document.getElementById('department').value.trim();
+  const designation = document.getElementById('designation').value.trim();
+
+  if (!empName || !site || !empId || !department || !designation) {
+    showAlert('reg-alert', 'Please fill in all fields before starting the assessment.');
+    return;
+  }
+
+  employeeData = {
+    topic: document.getElementById('topic').value,
+    empName, site, empId, department, designation
+  };
+
+  document.getElementById('step-register').style.display = 'none';
+  document.getElementById('step-quiz').style.display = 'block';
+  renderQuiz();
+}
+
+function renderQuiz() {
+  const container = document.getElementById('quiz-container');
+  let html = '';
+  QUESTIONS.forEach((item, i) => {
+    const letter = ['A','B','C'];
+    html += `
+      <div class="question-block">
+        <span class="q-no">Question ${i+1} of ${QUESTIONS.length}</span>
+        <div class="q-text">${item.q}</div>
+        <div class="options">
+          ${item.options.map((opt, idx) => `
+            <label>
+              <input type="radio" name="q${i}" value="${idx}">
+              <span><b>${letter[idx]}.</b> ${opt}</span>
+            </label>
+          `).join('')}
+        </div>
+      </div>`;
+  });
+  container.innerHTML = html;
+  container.addEventListener('change', updateProgress);
+}
+
+function updateProgress() {
+  let answered = 0;
+  QUESTIONS.forEach((_, i) => {
+    if (document.querySelector(`input[name="q${i}"]:checked`)) answered++;
+  });
+  const pct = (answered / QUESTIONS.length) * 100;
+  document.getElementById('progress-bar').style.width = pct + '%';
+}
+
+// Validates quiz answers, then moves to the Trainer Feedback Form step.
+function continueToFeedback() {
+  hideAlert('quiz-alert');
+  const answers = [];
+  let unanswered = 0;
+  QUESTIONS.forEach((_, i) => {
+    const sel = document.querySelector(`input[name="q${i}"]:checked`);
+    if (sel) answers.push(parseInt(sel.value));
+    else { answers.push(-1); unanswered++; }
+  });
+
+  if (unanswered > 0) {
+    showAlert('quiz-alert', `Please answer all quiz questions. ${unanswered} question(s) left unanswered.`);
+    return;
+  }
+
+  // Store quiz answers for later submission
+  quizAnswers = answers;
+
+  // Show the Trainer Feedback Form step
+  document.getElementById('step-quiz').style.display = 'none';
+  document.getElementById('step-feedback').style.display = 'block';
+
+  // Pre-fill employee information
+  document.getElementById('fb-name').textContent = employeeData.empName;
+  document.getElementById('fb-empid').textContent = employeeData.empId;
+  document.getElementById('fb-dept').textContent = employeeData.department;
+
+  const today = new Date();
+  const formattedDate = today.toLocaleDateString('en-GB', {
+    day: '2-digit', month: 'long', year: 'numeric'
+  });
+  document.getElementById('fb-date').textContent = formattedDate;
+  document.getElementById('feedback-date-display').textContent = formattedDate;
+
+  renderFeedbackQuestions();
+}
+
+function backToQuiz() {
+  document.getElementById('step-feedback').style.display = 'none';
+  document.getElementById('step-quiz').style.display = 'block';
+  // Scroll back to top of quiz
+  window.scrollTo({top: 0, behavior: 'smooth'});
+}
+
+function renderFeedbackQuestions() {
+  const container = document.getElementById('feedback-questions');
+  let html = '';
+  FEEDBACK_QUESTIONS.forEach((item, i) => {
+    html += `
+      <div class="feedback-question">
+        <div class="fq-text"><span class="fq-num">${i+1}</span>${item.q}</div>
+        <div class="feedback-options">
+          ${item.options.map((opt, idx) => `
+            <label>
+              <input type="radio" name="f${i}" value="${idx}">
+              <span>${opt}</span>
+            </label>
+          `).join('')}
+        </div>
+      </div>`;
+  });
+  container.innerHTML = html;
+}
+
+function submitAll() {
+  hideAlert('feedback-alert');
+
+  // Validate trainer name
+  const trainerName = document.getElementById('trainerName').value.trim();
+  if (!trainerName) {
+    showAlert('feedback-alert', 'Please enter the Trainer Name.');
+    return;
+  }
+
+  // Validate all feedback questions answered
+  const feedbackAnswers = [];
+  let unansweredFeedback = 0;
+  FEEDBACK_QUESTIONS.forEach((_, i) => {
+    const sel = document.querySelector(`input[name="f${i}"]:checked`);
+    if (sel) feedbackAnswers.push(parseInt(sel.value));
+    else { feedbackAnswers.push(-1); unansweredFeedback++; }
+  });
+
+  if (unansweredFeedback > 0) {
+    showAlert('feedback-alert', `Please answer all feedback questions. ${unansweredFeedback} question(s) left unanswered.`);
+    return;
+  }
+
+  // Final confirmation — no auto-submit
+  const ok = confirm("Are you sure you want to submit the assessment?\nThis will save your quiz answers and trainer feedback.\nYou cannot change your answers after submitting.");
+  if (!ok) return;
+
+  // Calculate quiz score
+  let correctCount = 0;
+  const results = QUESTIONS.map((item, i) => {
+    const userAns = quizAnswers[i];
+    const isCorrect = userAns === item.correct;
+    if (isCorrect) correctCount++;
+    return {
+      qNum: i + 1,
+      question: item.q,
+      userAnswer: item.options[userAns],
+      correctAnswer: item.options[item.correct],
+      isCorrect: isCorrect
+    };
+  });
+
+  const wrongCount = QUESTIONS.length - correctCount;
+  const band = getBand(correctCount);
+
+  // Build feedback results array
+  const feedbackResults = FEEDBACK_QUESTIONS.map((item, i) => ({
+    qNum: i + 1,
+    question: item.q,
+    selectedOption: item.options[feedbackAnswers[i]]
+  }));
+
+  // Show result screen
+  document.getElementById('step-feedback').style.display = 'none';
+  document.getElementById('step-result').style.display = 'block';
+
+  // Big marks display: X / 17
+  document.getElementById('marks-scored').textContent = correctCount;
+
+  // Right / Wrong summary pills
+  document.getElementById('pill-right').textContent = 'Correct: ' + correctCount;
+  document.getElementById('pill-wrong').textContent = 'Wrong: ' + wrongCount;
+
+  // Performance band badge
+  const badge = document.getElementById('band-badge');
+  badge.textContent = band.name;
+  badge.className = 'band-badge ' + band.class;
+
+  document.getElementById('result-msg').textContent = band.msg;
+  document.getElementById('emp-summary').textContent =
+    `${employeeData.empName} | ${employeeData.empId} | ${employeeData.designation} | ${employeeData.site}`;
+
+  // Result table with question text + answers + RIGHT/WRONG
+  const tbody = document.getElementById('result-tbody');
+  tbody.innerHTML = results.map(r => `
+    <tr>
+      <td>${r.qNum}</td>
+      <td>${r.question}</td>
+      <td>${r.userAnswer}</td>
+      <td>${r.correctAnswer}</td>
+      <td><span class="${r.isCorrect ? 'badge-right' : 'badge-wrong'}">${r.isCorrect ? 'RIGHT' : 'WRONG'}</span></td>
+    </tr>
+  `).join('');
+
+  // Send quiz + feedback to Google Sheet and Drive folder
+  sendToGoogleSheet(employeeData, quizAnswers, results, correctCount, band, {
+    trainerName,
+    feedbackDate: document.getElementById('fb-date').textContent,
+    feedbackAnswers,
+    feedbackResults
+  });
+}
+
+function sendToGoogleSheet(emp, answers, results, score, band, feedback) {
+  const status = document.getElementById('submit-status');
+  if (GOOGLE_SCRIPT_URL === 'PASTE_YOUR_GOOGLE_APPS_SCRIPT_URL_HERE') {
+    status.className = 'alert alert-error';
+    status.textContent = 'Google Script URL is not configured. Result shown here but NOT saved. Please set GOOGLE_SCRIPT_URL in the code.';
+    status.style.display = 'block';
+    return;
+  }
+
+  const payload = {
+    topic: emp.topic,
+    empName: emp.empName,
+    site: emp.site,
+    empId: emp.empId,
+    department: emp.department,
+    designation: emp.designation,
+    score: score,
+    total: QUESTIONS.length,
+    rightCount: score,
+    wrongCount: QUESTIONS.length - score,
+    performanceBand: band.name,
+    submittedAt: new Date().toISOString(),
+    questions: QUESTIONS.map((q, i) => ({
+      qNum: i + 1,
+      question: q.q,
+      userAnswer: q.options[answers[i]],
+      correctAnswer: q.options[q.correct],
+      result: (answers[i] === q.correct) ? 'RIGHT' : 'WRONG'
+    })),
+    feedback: {
+      trainerName: feedback.trainerName,
+      feedbackDate: feedback.feedbackDate,
+      questions: feedback.feedbackResults
+    }
+  };
+
+  fetch(GOOGLE_SCRIPT_URL, {
+    method: 'POST',
+    mode: 'no-cors',
+    headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+    body: JSON.stringify(payload)
+  })
+  .then(() => {
+    status.className = 'alert alert-success';
+    status.textContent = 'Your quiz responses and trainer feedback have been saved successfully.';
+    status.style.display = 'block';
+  })
+  .catch((err) => {
+    status.className = 'alert alert-error';
+    status.textContent = 'Could not save your responses. Please check your internet connection. Error: ' + err.message;
+    status.style.display = 'block';
+  });
+}
+</script>
+</body>
+</html>
